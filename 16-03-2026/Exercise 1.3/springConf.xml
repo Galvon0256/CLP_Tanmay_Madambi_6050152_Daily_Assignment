@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="sbuBean" class="org.example.springcore.beans.SBU">
+        <property name="sbuCode" value="PES-BU"/>
+        <property name="sbuHead" value="Kiran Rao"/>
+        <property name="sbuName" value="Product Engineering Services"/>
+        <property name="empList">
+            <list>
+                <ref bean="employeeBean1"/>
+                <ref bean="employeeBean2"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="employeeBean1" class="org.example.springcore.beans.Employee">
+        <constructor-arg name="empAge" value="40"/>
+        <constructor-arg name="empId" value="12345"/>
+        <constructor-arg name="empName" value="Harriet"/>
+        <constructor-arg name="empSalary" value="40000.0"/>
+        <constructor-arg name="businessUnit" ref="sbuBean"/>
+    </bean>
+
+    <bean id="employeeBean2" class="org.example.springcore.beans.Employee">
+        <constructor-arg name="empAge" value="32"/>
+        <constructor-arg name="empId" value="12346"/>
+        <constructor-arg name="empName" value="Samuel"/>
+        <constructor-arg name="empSalary" value="45000.0"/>
+        <constructor-arg name="businessUnit" ref="sbuBean"/>
+    </bean>
+
+</beans>
