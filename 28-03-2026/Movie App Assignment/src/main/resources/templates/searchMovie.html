@@ -1,0 +1,239 @@
+<!--<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Search Movie</title></head>
+<body>
+    <h1 style="color:#2a4d8f;">Welcome to Movie App</h1>
+    <a th:href="@{/addMovie}">Add Movies</a>&nbsp;|&nbsp;
+    <a th:href="@{/allMovies}">Search All Movies</a>&nbsp;|&nbsp;
+    <a th:href="@{/searchMovie}">Search Movie By Category</a>
+    <br/><br/>
+
+    <form th:action="@{/searchMovie}" th:object="${searchMovie}" method="post">
+        <b>Search Movie</b>
+        <select th:field="*{genre}">
+            <option value="Drama">Drama</option>
+            <option value="Fiction">Fiction</option>
+            <option value="Satire">Satire</option>
+        </select>
+        <input type="submit" value="Search Movie" />
+    </form>
+
+    <br/>
+    <div th:if="${movies != null}">
+        <table border="1" cellpadding="5">
+            <tr>
+                <th>Movie Name</th>
+                <th>Rating</th>
+            </tr>
+            <tr th:each="movie : ${movies}">
+                <td th:text="${movie.movieName}"></td>
+                <td th:text="${movie.rating}"></td>
+            </tr>
+        </table>
+        <p th:if="${#lists.isEmpty(movies)}">No movies found for selected genre.</p>
+    </div>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Search by Genre — CineVault</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=DM+Sans:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0a0f; --surface: #111118; --card: #16161f;
+      --border: rgba(255,255,255,0.07); --accent: #e8b400; --accent2: #ff6b35;
+      --text: #e8e8f0; --muted: #6b6b80;
+    }
+    body {
+      font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh;
+      background-image: radial-gradient(ellipse 70% 50% at 20% 0%, rgba(59,130,246,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 80% 80%, rgba(232,180,0,0.06) 0%, transparent 60%);
+    }
+    nav {
+      display: flex; align-items: center; gap: 8px; padding: 18px 40px;
+      border-bottom: 1px solid var(--border); background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 100;
+    }
+    .brand { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 4px; color: var(--accent); text-decoration: none; margin-right: auto; }
+    .brand span { color: var(--muted); }
+    nav a:not(.brand) { color: var(--muted); text-decoration: none; font-size: 0.84rem; font-weight: 500; padding: 8px 16px; border-radius: 8px; border: 1px solid transparent; transition: all 0.2s; }
+    nav a:not(.brand):hover { color: var(--text); border-color: var(--border); background: var(--card); }
+    nav a.active { color: var(--accent); border-color: rgba(232,180,0,0.25); background: rgba(232,180,0,0.06); }
+
+    .page { max-width: 860px; margin: 0 auto; padding: 48px 24px; }
+
+    .page-head { margin-bottom: 36px; }
+    .page-head .breadcrumb { font-size: 0.78rem; color: var(--muted); margin-bottom: 6px; }
+    .page-head .breadcrumb a { color: var(--muted); text-decoration: none; }
+    .page-head .breadcrumb a:hover { color: var(--accent); }
+    .page-head h1 { font-family: 'Bebas Neue', sans-serif; font-size: 2.4rem; letter-spacing: 4px; }
+    .page-head h1 span { color: var(--accent); }
+
+    /* Genre Selector Cards */
+    .genre-section { margin-bottom: 32px; }
+    .genre-section-label { font-size: 0.75rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+
+    .genre-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+    .genre-option { position: relative; }
+    .genre-option input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+    .genre-option label {
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      padding: 20px 16px; background: var(--card); border: 2px solid var(--border);
+      border-radius: 14px; cursor: pointer; transition: all 0.2s; text-align: center;
+    }
+    .genre-option label:hover { border-color: rgba(255,255,255,0.15); background: #1c1c26; }
+    .genre-option input:checked + label {
+      border-color: var(--accent); background: rgba(232,180,0,0.06);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+    .genre-icon { font-size: 1.8rem; }
+    .genre-name { font-size: 0.9rem; font-weight: 600; }
+    .genre-desc { font-size: 0.74rem; color: var(--muted); line-height: 1.4; }
+
+    .search-form-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; margin-bottom: 32px; }
+    .search-row { display: flex; gap: 12px; align-items: flex-end; }
+    .select-group { flex: 1; }
+    .select-group label { display: block; font-size: 0.74rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+    .select-group select {
+      width: 100%; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 9px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.95rem;
+      outline: none; appearance: none; cursor: pointer; transition: all 0.2s;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b6b80' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;
+    }
+    .select-group select option { background: #111118; }
+    .select-group select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(232,180,0,0.1); }
+
+    .btn { display: inline-flex; align-items: center; gap: 7px; padding: 12px 24px; border-radius: 9px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; white-space: nowrap; }
+    .btn-primary { background: var(--accent); color: #0a0a0f; }
+    .btn-primary:hover { background: #f5c400; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(232,180,0,0.25); }
+
+    /* Results */
+    .results-label { font-size: 0.75rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+    .results-label .count { background: var(--surface); border: 1px solid var(--border); padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; }
+
+    .table-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; }
+    thead th { padding: 12px 20px; text-align: left; font-size: 0.7rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); background: var(--surface); border-bottom: 1px solid var(--border); }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(232,180,0,0.02); }
+    tbody td { padding: 14px 20px; font-size: 0.9rem; }
+
+    .rating-wrap { display: flex; align-items: center; gap: 6px; }
+    .rating-bar { width: 60px; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .rating-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; }
+    .rating-num { font-size: 0.82rem; color: var(--accent); font-weight: 600; }
+
+    .empty-state { text-align: center; padding: 48px; color: var(--muted); }
+    .empty-state .icon { font-size: 2.5rem; margin-bottom: 10px; opacity: 0.5; }
+    .empty-state p { font-size: 0.875rem; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="brand" th:href="@{/}">CINE<span>VAULT</span></a>
+    <a th:href="@{/addMovie}">＋ Add Movie</a>
+    <a th:href="@{/allMovies}">All Movies</a>
+    <a class="active" th:href="@{/searchMovie}">By Genre</a>
+  </nav>
+
+  <div class="page">
+    <div class="page-head">
+      <div class="breadcrumb"><a th:href="@{/}">Home</a> / Search by Genre</div>
+      <h1>SEARCH BY <span>GENRE</span></h1>
+    </div>
+
+    <div class="search-form-card">
+      <form th:action="@{/searchMovie}" th:object="${searchMovie}" method="post">
+        <div class="genre-section">
+          <div class="genre-section-label">Pick a genre</div>
+          <div class="genre-cards">
+            <div class="genre-option">
+              <input type="radio" id="drama" th:field="*{genre}" value="Drama"/>
+              <label for="drama">
+                <span class="genre-icon">🎭</span>
+                <span class="genre-name">Drama</span>
+                <span class="genre-desc">Emotional, character-driven stories</span>
+              </label>
+            </div>
+            <div class="genre-option">
+              <input type="radio" id="fiction" th:field="*{genre}" value="Fiction"/>
+              <label for="fiction">
+                <span class="genre-icon">🚀</span>
+                <span class="genre-name">Fiction</span>
+                <span class="genre-desc">Imaginative worlds and concepts</span>
+              </label>
+            </div>
+            <div class="genre-option">
+              <input type="radio" id="satire" th:field="*{genre}" value="Satire"/>
+              <label for="satire">
+                <span class="genre-icon">😏</span>
+                <span class="genre-name">Satire</span>
+                <span class="genre-desc">Society examined with wit &amp; irony</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="search-row">
+          <div class="select-group">
+            <label>Or select from dropdown</label>
+            <select th:field="*{genre}">
+              <option value="">— Choose a genre —</option>
+              <option value="Drama">Drama</option>
+              <option value="Fiction">Fiction</option>
+              <option value="Satire">Satire</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary">🔍 Search</button>
+        </div>
+      </form>
+    </div>
+
+    <div th:if="${movies != null}">
+      <div th:if="${!#lists.isEmpty(movies)}">
+        <div class="results-label">
+          Results <span class="count" th:text="${#lists.size(movies)} + ' found'"></span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Movie Name</th>
+                <th>Rating</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="movie : ${movies}">
+                <td th:text="${movie.movieName}"></td>
+                <td>
+                  <div class="rating-wrap">
+                    <div class="rating-bar">
+                      <div class="rating-fill" th:style="'width:' + (${movie.rating} * 10) + '%'"></div>
+                    </div>
+                    <span class="rating-num" th:text="${movie.rating}"></span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div th:if="${#lists.isEmpty(movies)}" class="table-wrap">
+        <div class="empty-state">
+          <div class="icon">🔍</div>
+          <p>No movies found for the selected genre.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

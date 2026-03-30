@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Add Movie</title></head>
+<body>
+    <h1 style="color:#2a4d8f;">Welcome to Movie App</h1>
+    <a th:href="@{/addMovie}">Add Movies</a>&nbsp;|&nbsp;
+    <a th:href="@{/allMovies}">Search All Movies</a>&nbsp;|&nbsp;
+    <a th:href="@{/searchMovie}">Search Movie By Category</a>
+    <br/><br/>
+
+    <form th:action="@{/addMovie}" th:object="${movie}" method="post">
+
+        Movie Name: <input type="text" th:field="*{movieName}" /><br/>
+        <span th:if="${movieNameError != null and !#strings.isEmpty(movieNameError)}"
+              th:text="${movieNameError}" style="color:red;"></span><br/>
+
+        Give Rating: <input type="text" th:field="*{rating}" /><br/>
+        <span th:if="${ratingError != null and !#strings.isEmpty(ratingError)}"
+              th:text="${ratingError}" style="color:red;"></span><br/>
+
+        Select Genre:
+        <select th:field="*{genre}">
+            <option value="--Select--">--Select--</option>
+            <option value="Drama">Drama</option>
+            <option value="Fiction">Fiction</option>
+            <option value="Satire">Satire</option>
+        </select><br/>
+        <span th:if="${genreError != null and !#strings.isEmpty(genreError)}"
+              th:text="${genreError}" style="color:red;"></span><br/>
+
+        <input type="submit" value="Add Movie" />
+    </form>
+
+    <p th:if="${successMessage != null}" th:text="${successMessage}" style="color:green;"></p>
+</body>
+</html> 
