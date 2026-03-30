@@ -1,0 +1,17 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Movie App</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <h1>Welcome to Movie App</h1>
+
+    <p th:if="${message}" th:text="${message}"></p>
+
+    <p><a th:href="@{/movies/new}">Add Movies</a></p>
+    <p><a th:href="@{/movies}">List All Movies</a></p>
+    <p><a th:href="@{/movies/search}">Search Movies By Category</a></p>
+
+</body>
+</html>

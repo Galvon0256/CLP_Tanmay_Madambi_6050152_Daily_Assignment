@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Search Movies</title>
+</head>
+<body>
+
+<h1>Search Movies by Genre</h1>
+
+<form th:action="@{/movies/search}" method="get">
+    <label>Genre</label><br/>
+    <select name="genre">
+        <option value="">--Select Genre--</option>
+        <option value="Fiction">Fiction</option>
+        <option value="Satire">Satire</option>
+        <option value="Drama">Drama</option>
+    </select><br><br>
+    <button type="submit">Search</button>
+    <a th:href="@{/}">Cancel</a>
+</form>
+
+<br/>
+
+<div th:if="${movies}">
+    <h2>Results</h2>
+
+    <p th:if="${movies.empty}">No movies found for this genre.</p>
+
+    <table th:unless="${movies.empty}" border="1">
+        <tr>
+            <th>Title</th>
+            <th>Genre</th>
+            <th>Rating</th>
+        </tr>
+        <tr th:each="movie : ${movies}">
+            <td th:text="${movie.title}"></td>
+            <td th:text="${movie.genre}"></td>
+            <td th:text="${movie.rating}"></td>
+        </tr>
+    </table>
+</div>
+
+</body>
+</html>
